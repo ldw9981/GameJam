@@ -35,6 +35,8 @@ public:
 	float BaseDamage = 30.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OnCollide")
 	float RadialDamageRadius = 100.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OnCollide")
+	bool InitialEnableCollision = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OnCollide")
 	TSubclassOf<UCustomDamageType> CustomDamageTypeClass;

@@ -29,7 +29,7 @@ void AWeaponActor::BeginPlay()
 	if (ParentPawn)
 	{
 		Instigator = ParentPawn;
-	}
+	}	
 
 	UShapeComponent* Collision = this->FindComponentByClass<UShapeComponent>();
 	if (Collision)
@@ -37,7 +37,8 @@ void AWeaponActor::BeginPlay()
 		Collision->OnComponentHit.AddDynamic(this, &AWeaponActor::OnComponentHit);
 		Collision->OnComponentBeginOverlap.AddDynamic(this, &AWeaponActor::OnComponentBeginOverlap);
 	}
-	SetActorEnableCollision(false);
+
+	SetActorEnableCollision(InitialEnableCollision);
 }
 
 

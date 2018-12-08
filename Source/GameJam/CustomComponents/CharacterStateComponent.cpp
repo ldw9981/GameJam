@@ -82,7 +82,7 @@ ECharacterState UCharacterStateComponent::GetCurrentState()
 
 inline bool UCharacterStateComponent::IsDead()
 {
-	if (CurrentHP <= 0 || CurrentState == ECharacterState::Dead)
+	if (CurrentState == ECharacterState::Dead)
 		return true;
 
 	return false;
@@ -104,7 +104,7 @@ void UCharacterStateComponent::OnTakeAnyDamage(AActor * DamagedActor, float Dama
 
 	float Result = CalculateAnyDamage(DamagedActor, Damage, DamageType,InstigatedBy, DamageCauser);
 	UE_LOG(LogClass, Warning, TEXT("DamagedActor %s TakeDamage OnTakeAnyDamage: %f -> %f" ), *DamagedActor->GetName(), Damage,Result);
-	CalculateCurrentHP(-Result);
+	CalculateCurrentHP(-Result,DamageType);
 }
 
 void UCharacterStateComponent::OnTakePointDamage(AActor * DamagedActor, float Damage, AController * InstigatedBy, FVector HitLocation, UPrimitiveComponent * FHitComponent, FName BoneName, FVector ShotFromDirection, const UDamageType * DamageType, AActor * DamageCauser)
@@ -116,7 +116,7 @@ void UCharacterStateComponent::OnTakePointDamage(AActor * DamagedActor, float Da
 
 	float Result = CalculatePointDamage(DamagedActor, Damage, InstigatedBy, HitLocation, FHitComponent, BoneName, ShotFromDirection, DamageType, DamageCauser);
 	UE_LOG(LogClass, Warning, TEXT("DamagedActor %s TakeDamage OnTakePointDamage: %s %f -> %f"), *DamagedActor->GetName(), *BoneName.ToString(), Damage, Result);
-	CalculateCurrentHP(-Result);
+	CalculateCurrentHP(-Result,DamageType);
 }
 
 void UCharacterStateComponent::OnTakeRadialDamage(AActor * DamagedActor, float Damage, const UDamageType * DamageType, FVector Origin, FHitResult HitInfo, AController * InstigatedBy, AActor * DamageCauser)
@@ -128,10 +128,10 @@ void UCharacterStateComponent::OnTakeRadialDamage(AActor * DamagedActor, float D
 
 	float Result = CalculateRadialDamage(DamagedActor, Damage, DamageType, Origin, HitInfo, InstigatedBy, DamageCauser);
 	UE_LOG(LogClass, Warning, TEXT("DamagedActor %s TakeDamage OnTakeRadialDamage: %f -> %f"), *DamagedActor->GetName(), Damage, Result);
-	CalculateCurrentHP(-Result);
+	CalculateCurrentHP(-Result,DamageType);
 }
 
-void UCharacterStateComponent::CalculateCurrentHP(float AddHP)
+void UCharacterStateComponent::CalculateCurrentHP(float AddHP,const class UDamageType* DamageType)
 {
 	if (IsDead())
 	{
