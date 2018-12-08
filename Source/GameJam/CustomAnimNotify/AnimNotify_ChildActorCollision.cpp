@@ -21,7 +21,7 @@ void UAnimNotify_ChildActorCollision::NotifyBegin(USkeletalMeshComponent * MeshC
 		{
 			TargetActor.Add(ChildActor);
 			ChildActor->SetActorEnableCollision(true);
-			UE_LOG(LogClass, Warning, TEXT(__FUNCTION__));
+			//UE_LOG(LogClass, Warning, TEXT(__FUNCTION__));
 		}
 	}
 }
@@ -31,7 +31,7 @@ void UAnimNotify_ChildActorCollision::NotifyEnd(USkeletalMeshComponent * MeshCom
 	for (auto Actor : TargetActor)
 	{
 		Actor->SetActorEnableCollision(false);		
-		UE_LOG(LogClass, Warning, TEXT(__FUNCTION__));
+		//UE_LOG(LogClass, Warning, TEXT(__FUNCTION__));
 	}
 	TargetActor.Empty();
 }
