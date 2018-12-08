@@ -66,7 +66,7 @@ void UCharacterStateComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 }
 
 
-inline void UCharacterStateComponent::SetCurrentState(ECharacterState NewCurrentState)
+void UCharacterStateComponent::SetCurrentState(ECharacterState NewCurrentState)
 {
 	if (NewCurrentState != CurrentState)
 	{
@@ -80,7 +80,7 @@ ECharacterState UCharacterStateComponent::GetCurrentState()
 	return CurrentState;
 }
 
-inline bool UCharacterStateComponent::IsDead()
+bool UCharacterStateComponent::IsDead()
 {
 	if (CurrentState == ECharacterState::Dead)
 		return true;
