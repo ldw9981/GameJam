@@ -46,14 +46,19 @@ void UBTService_AttackCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 
 	}
 
 	float Distance = FVector::Distance(Pawn->GetActorLocation(), ChaseTargetActor->GetActorLocation());
-	if (Distance > PawnSensing->SightRadius)
+	if (Distance > Skill->SkillRange)
 	{
-		ECharacterState NewState = ECharacterState::Normal;
+		ECharacterState NewState = ECharacterState::Chase;
 		CharacterState->SetCurrentState(NewState);
 	}
 	else if (Distance <= Skill->SkillRange)
 	{
 		ECharacterState NewState = ECharacterState::Battle;
+		CharacterState->SetCurrentState(NewState);
+	}
+	else if (Distance > PawnSensing->SightRadius)
+	{
+		ECharacterState NewState = ECharacterState::Normal;
 		CharacterState->SetCurrentState(NewState);
 	}
 }
