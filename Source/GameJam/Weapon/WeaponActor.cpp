@@ -4,9 +4,11 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "Components/SphereComponent.h"
 #include "CustomDamageType/CustomDamageType.h"
 #include "Components/ShapeComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine.h"
 
 // Sets default values
 AWeaponActor::AWeaponActor()
@@ -17,6 +19,10 @@ AWeaponActor::AWeaponActor()
 	DefaultScene = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultScene"));
 	SetRootComponent(DefaultScene);
 
+	TargetComp = CreateDefaultSubobject<USphereComponent>(TEXT("TargetComponent"));
+	TargetComp->SetupAttachment(RootComponent);
+	TargetComp->SetSphereRadius(30.0f);
+	
 	
 }
 
@@ -31,16 +37,15 @@ void AWeaponActor::BeginPlay()
 		Instigator = ParentPawn;
 	}	
 
-	UShapeComponent* Collision = this->FindComponentByClass<UShapeComponent>();
-	if (Collision)
+	//UShapeComponent* Collision = this->FindComponentByClass<UShapeComponent>();
+	if (TargetComp)
 	{
-		Collision->OnComponentHit.AddDynamic(this, &AWeaponActor::OnComponentHit);
-		Collision->OnComponentBeginOverlap.AddDynamic(this, &AWeaponActor::OnComponentBeginOverlap);
+		TargetComp->OnComponentHit.AddDynamic(this, &AWeaponActor::OnComponentHit);
+		TargetComp->OnComponentBeginOverlap.AddDynamic(this, &AWeaponActor::OnComponentBeginOverlap);
 	}
 
-	SetActorEnableCollision(InitialEnableCollision);
+	//SetActorEnableCollision(InitialEnableCollision);
 }
-
 
 // Called every frame
 void AWeaponActor::Tick(float DeltaTime)
@@ -49,12 +54,17 @@ void AWeaponActor::Tick(float DeltaTime)
 
 }
 
-
 void AWeaponActor::OnComponentHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, FVector NormalImpulse, const FHitResult & Hit)
 {
-	//UE_LOG(LogClass, Warning, TEXT("AWeaponActor::OnComponentHit: %s %s %s"), *OtherActor->GetName(), *OtherComp->GetName(), *Hit.BoneName.ToString());
+	if (OtherActor != UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+	{
+		return;
+	}
+
+	UE_LOG(LogClass, Warning, TEXT("AWeaponActor::OnComponentHit: %s, %s, %s"), *OtherActor->GetName(), *OtherComp->GetName(), *Hit.BoneName.ToString());
+		
+	IgnoreActors.Add(this);
 	
-	TArray<AActor*> IgnoreActors;
 	// 프로젝타일 액터의 데미지를 발생시킨 액터
 	if (Instigator != nullptr && Instigator->IsValidLowLevel() && OtherActor != Instigator)
 	{
@@ -81,9 +91,16 @@ void AWeaponActor::OnComponentHit(UPrimitiveComponent * HitComponent, AActor * O
 
 void AWeaponActor::OnComponentBeginOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
-	//UE_LOG(LogClass, Warning, TEXT("AWeaponActor::OnComponentBeginOverlap: %s %s %s"), *OtherActor->GetName(), *OtherComp->GetName(), *SweepResult.BoneName.ToString());
+	if (OtherActor != UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+	{
+		return;
+	}
+
+	UE_LOG(LogClass, Warning, TEXT("AWeaponActor::OnComponentBeginOverlap: %s %s %s"), *OtherActor->GetName(), *OtherComp->GetName(), *SweepResult.BoneName.ToString());
 	   	  
-	TArray<AActor*> IgnoreActors;
+	IgnoreActors.Add(this);
+
+	//TArray<AActor*> IgnoreActors;
 	// 데미지를 발생시킨 액터
 	if (Instigator != nullptr && Instigator->IsValidLowLevel() && OtherActor != Instigator)
 	{
@@ -107,4 +124,9 @@ void AWeaponActor::OnComponentBeginOverlap(UPrimitiveComponent * OverlappedCompo
 			break;
 		}
 	}
+}
+
+void AWeaponActor::AddIgnoreActor(AActor* TargetActor)
+{
+	IgnoreActors.Add(TargetActor);
 }

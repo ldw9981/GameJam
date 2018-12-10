@@ -2,8 +2,10 @@
 
 #include "AnimNotify_ChildActorCollision.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Weapon/WeaponActor.h"
 
 void UAnimNotify_ChildActorCollision::NotifyBegin(USkeletalMeshComponent * MeshComp, UAnimSequenceBase * Animation, float TotalDuration)
 {
@@ -20,7 +22,10 @@ void UAnimNotify_ChildActorCollision::NotifyBegin(USkeletalMeshComponent * MeshC
 		if (ChildActor->GetParentComponent()->GetAttachSocketName() == SocketName)
 		{
 			TargetActor.Add(ChildActor);
-			ChildActor->SetActorEnableCollision(true);
+			AWeaponActor* WeaponActor = Cast<AWeaponActor>(ChildActor);
+			//WeaponActor->GetShpereComp()->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
+			WeaponActor->GetShpereComp()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			//ChildActor->SetActorEnableCollision(true);
 			//UE_LOG(LogClass, Warning, TEXT(__FUNCTION__));
 		}
 	}
@@ -30,7 +35,12 @@ void UAnimNotify_ChildActorCollision::NotifyEnd(USkeletalMeshComponent * MeshCom
 {
 	for (auto Actor : TargetActor)
 	{
-		Actor->SetActorEnableCollision(false);		
+		AWeaponActor* WeaponActor = Cast<AWeaponActor>(Actor);
+		//WeaponActor->GetShpereComp()->SetCollisionProfileName(TEXT("NoCollision"));
+		WeaponActor->GetShpereComp()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+
+		//Actor->SetActorEnableCollision(false);		
 		//UE_LOG(LogClass, Warning, TEXT(__FUNCTION__));
 	}
 	TargetActor.Empty();

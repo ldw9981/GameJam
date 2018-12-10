@@ -28,8 +28,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	USceneComponent* DefaultScene;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	class UStaticMeshComponent* Mesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	class USphereComponent* TargetComp;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OnCollide")
 	float BaseDamage = 30.0f;
@@ -40,6 +43,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OnCollide")
 	TSubclassOf<UCustomDamageType> CustomDamageTypeClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OnCollide")
+	TArray<AActor*> IgnoreActors;
 
 	FVector	CurrLocation;
 	FVector	PrevLocation;
@@ -56,4 +62,9 @@ public:
 	void OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	UFUNCTION()
 	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
+
+	UFUNCTION(BlueprintCallable, Category = "HitCheck")
+	void AddIgnoreActor(AActor* TargetActor);
+
+	FORCEINLINE USphereComponent* GetShpereComp() const { return TargetComp; }
 };
