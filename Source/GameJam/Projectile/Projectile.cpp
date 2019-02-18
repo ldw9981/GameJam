@@ -61,6 +61,8 @@ void AProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* Othe
 	// 프로젝타일 액터의 데미지를 발생시킨 액터
 	if ( Instigator != nullptr && Instigator->IsValidLowLevel() && OtherActor != Instigator)
 	{
+		IgnoreActors.Add(Instigator);
+
 		// nullptr != 캐스팅하여 UCustomDamageType 가져오기 , nullptr이면 UCustomDamageType의 CDO 가져오기 
 		UCustomDamageType const* const DamageTypeCDO = CustomDamageTypeClass ? CustomDamageTypeClass->GetDefaultObject<UCustomDamageType>() : GetDefault<UCustomDamageType>();
 		switch (DamageTypeCDO->CustomDamageEventType)
